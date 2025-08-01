@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace Proyecto.ML.Entities;
 
-public class Estado
+public partial class Role
 {
-    public int IdEstado { get; set; }
+    public int Rolid { get; set; }
 
-    public string Estado1 { get; set; } = null!;
+    public string Rol { get; set; } = null!;
 
     public virtual ICollection<Usuario> Usuarios { get; set; } = new List<Usuario>();
 }
