@@ -1,0 +1,31 @@
+﻿@model IEnumerable<IGrouping<string, Proyecto.BLL.Dtos.Responses.TareaResponse>>
+
+<h1>Cola de Tareas por Prioridad</h1>
+
+@foreach (var grupo in Model)
+{
+    <h2>Prioridad: @grupo.Key</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Descripción</th>
+                <th>Estado</th>
+                <th>Asignado a</th>
+                <th>Creador</th>
+                <th>Fecha Solicitud</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tarea in grupo)
+            {
+                <tr>
+                    <td>@tarea.Descripcion</td>
+                    <td>@tarea.Estado</td>
+                    <td>@tarea.NombreUsuarioAsignado</td>
+                    <td>@tarea.NombreCreador</td>
+                    <td>@tarea.FechaHoraSolicitud.ToString("g")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

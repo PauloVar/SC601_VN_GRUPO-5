@@ -20,14 +20,13 @@ namespace Proyecto.DAL.Repositories
             _dbSet = context.Set<T>();
         }
 
-        public async Task<T> DeleteById(int id)
+        public async Task<bool> DeleteById(int id)
         {
-            var entity = await _dbSet.FindAsync(id);
-            if (entity is not null)
-            {
-                _dbSet.Remove(entity);
-            }
-            return entity;
+            var tarea = await _context.Tareas.FindAsync(id);
+            if (tarea == null) return false;
+
+            _context.Tareas.Remove(tarea);
+            return true;
         }
 
         public async Task<IEnumerable<T>> GetAll()

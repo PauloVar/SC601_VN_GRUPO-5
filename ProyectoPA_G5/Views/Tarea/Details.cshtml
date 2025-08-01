@@ -1,0 +1,39 @@
+﻿@model Proyecto.BLL.Dtos.Responses.TareaResponse
+
+@{
+    ViewData["Title"] = "Detalles de Tarea";
+}
+
+<h1>Detalles de Tarea</h1>
+
+<div class="form-group">
+    <label class="control-label">Descripción</label>
+    <input class="form-control" value="@Model.Descripcion" readonly />
+</div>
+
+<div class="form-group">
+    <label class="control-label">Prioridad</label>
+    <input class="form-control" value="@Model.Prioridad" readonly />
+</div>
+
+<div class="form-group">
+    <label class="control-label">Estado</label>
+    <input class="form-control" value="@Model.Estado" readonly />
+</div>
+
+<div class="form-group">
+    <label class="control-label">Usuario asignado</label>
+    <input class="form-control" value="@ViewBag.NombreUsuarioAsignado" readonly />
+</div>
+
+<div class="form-group">
+    <label class="control-label">Usuario que crea</label>
+    <input class="form-control" value="@ViewBag.NombreCreador" readonly />
+</div>
+
+<div class="form-group">
+    <label class="control-label">Fecha de solicitud</label>
+    <input class="form-control" value="@Model.FechaHoraSolicitud.ToString("g")" readonly />
+</div>
+
+<a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>

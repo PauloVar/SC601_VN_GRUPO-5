@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Proyecto.BLL.Dtos.Requests
+namespace Proyecto.BLL.Dtos.Responses
 {
     public class TareaResponse
     {
@@ -18,5 +18,9 @@ namespace Proyecto.BLL.Dtos.Requests
         public int IdEstadoTarea { get; set; }
         public int CreadaPor { get; set; }
         public int IdUsuario { get; set; }
+
+        // NUEVAS propiedades para los nombres
+        public string NombreCreador { get; set; } = null!;
+        public string NombreUsuarioAsignado { get; set; } = null!;
     }
 }

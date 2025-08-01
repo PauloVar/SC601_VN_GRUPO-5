@@ -12,6 +12,6 @@ namespace Proyecto.DAL.Interfaces
         Task<IEnumerable<T>> GetAll();
         Task<T> Insert(T entity);
         Task<T> Update(T entity);
-        Task<T> DeleteById(int id);
+        Task<bool> DeleteById(int id);
     }
 }

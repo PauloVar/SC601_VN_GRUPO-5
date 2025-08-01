@@ -15,5 +15,7 @@ namespace Proyecto.BLL.Interfaces
         Task<bool> Create(TareaRequest request);
         Task<bool> Update(int id, TareaRequest request);
         Task<bool> Delete(int id);
+
+        Task<IEnumerable<TareaResponse>> ObtenerTareasEnColaAsync();
     }
 }

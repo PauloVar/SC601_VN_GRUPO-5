@@ -12,6 +12,10 @@ namespace Proyecto.DAL.Interfaces
     {
         //Task<int> GetMaxId();
         Task<IEnumerable<Tarea>> GetAllWithRelations();
+
+        Task<Tarea?> GetById(int id);
+
+        Task<Tarea?> GetByIdWithIncludes(int id);
     }
 
     
