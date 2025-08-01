@@ -1,13 +1,13 @@
-﻿@model IEnumerable<Proyecto.BLL.Dtos.Requests.TareaResponse>
+﻿@model IEnumerable<TareaResponse>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Index de prueba";
 }
 
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-controller="Tarea" asp-action="Create">Crear una Tarea</a>
 </p>
 <table class="table">
     <thead>
@@ -49,9 +49,9 @@
                 @Html.DisplayFor(modelItem => item.FechaHoraSolicitud)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                    @Html.ActionLink("Edit", "Edit", new { id = item.IdTarea }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.IdTarea }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.IdTarea })
             </td>
         </tr>
 }

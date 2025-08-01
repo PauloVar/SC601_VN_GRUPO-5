@@ -78,7 +78,11 @@ namespace Proyecto.BLL.Servicios
                 Descripcion = t.Descripcion,
                 Estado = t.IdEstadoTareaNavigation.EstadoTarea1,
                 Prioridad = t.IdPrioridadNavigation.Prioridad1,
-                FechaHoraSolicitud = t.FechaHoraSolicitud
+                FechaHoraSolicitud = t.FechaHoraSolicitud,
+                IdEstadoTarea = t.IdEstadoTarea,
+                IdPrioridad = t.IdPrioridad,
+                CreadaPor = t.CreadaPor,
+                IdUsuario = t.IdUsuario
             };
         }
     }

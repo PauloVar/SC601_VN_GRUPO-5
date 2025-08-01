@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Proyecto.BLL.Interfaces;
 using Proyecto.BLL.Servicios;
 using Proyecto.DAL.Context;
+using Proyecto.DAL.Interfaces;
+using Proyecto.DAL.Repositories;
 using Proyecto.DAL.UnitsOfWork;
 using ProyectoPA_G5.Data;
 
@@ -16,6 +18,10 @@ builder.Services.AddDbContext<ProyectoTareasContext>(options => options.UseSqlSe
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddTransient<ITareaService, TareaService>();
+builder.Services.AddScoped<IPrioridadRepository, PrioridadRepository>();
+builder.Services.AddScoped<IEstadoTareaRepository, EstadoTareaRepository>();
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+
 
 
 

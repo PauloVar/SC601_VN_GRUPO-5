@@ -22,6 +22,8 @@ namespace Proyecto.DAL.UnitsOfWork
         private ITareaRepository _tareas;
         private IPrioridadRepository _prioridades;
         private IEstadoTareaRepository _estadoTareas;
+        private IUsuarioRepository _usuarios;
+
 
         public ITareaRepository Tareas =>
             _tareas ?? new TareaRepository(_context);
@@ -31,6 +33,9 @@ namespace Proyecto.DAL.UnitsOfWork
 
         public IEstadoTareaRepository EstadoTareas =>
             _estadoTareas ?? new EstadoTareaRepository(_context);
+        public IUsuarioRepository Usuarios =>
+            _usuarios ??= new UsuarioRepository(_context);
+
 
         public async Task<int> SaveChangesAsync()
         {

@@ -13,6 +13,7 @@ namespace Proyecto.DAL.UnitsOfWork
         ITareaRepository Tareas { get; }
         IPrioridadRepository Prioridades { get; }
         IEstadoTareaRepository EstadoTareas { get; }
+        IUsuarioRepository Usuarios { get; }
         Task<int> SaveChangesAsync();
     }
 }
