@@ -32,7 +32,10 @@ namespace ProyectoPA_G5.Controllers
         public async Task<IActionResult> Create()
         {
             ViewBag.Prioridades = new SelectList(await _unitOfWork.Prioridades.GetAll(), "IdPrioridad", "Prioridad1");
-            ViewBag.Estados = new SelectList(await _unitOfWork.EstadoTareas.GetAll(), "IdEstadoTarea", "EstadoTarea1");
+            var estadosFiltrados = (await _unitOfWork.EstadoTareas.GetAll())
+            .Where(e => e.EstadoTarea1 == "Pendiente" || e.EstadoTarea1 == "En Proceso")
+            .ToList();
+            ViewBag.Estados = new SelectList(estadosFiltrados, "IdEstadoTarea", "EstadoTarea1");
             ViewBag.Usuarios = new SelectList(await _unitOfWork.Usuarios.GetAll(), "IdUsuario", "Nombre");
 
 
@@ -68,7 +71,18 @@ namespace ProyectoPA_G5.Controllers
 
             // Cargar de datos 
             ViewBag.Prioridades = new SelectList(await _unitOfWork.Prioridades.GetAll(), "IdPrioridad", "Prioridad1");
-            ViewBag.Estados = new SelectList(await _unitOfWork.EstadoTareas.GetAll(), "IdEstadoTarea", "EstadoTarea1");
+            var todosLosEstados = await _unitOfWork.EstadoTareas.GetAll();
+            var estadoActual = todosLosEstados.FirstOrDefault(e => e.IdEstadoTarea == tarea.IdEstadoTarea);
+
+            if (estadoActual != null && estadoActual.EstadoTarea1 == "Cancelada")
+            {
+                var soloEstadoCancelado = todosLosEstados.Where(e => e.EstadoTarea1 == "Cancelada").ToList();
+                ViewBag.Estados = new SelectList(soloEstadoCancelado, "IdEstadoTarea", "EstadoTarea1");
+            }
+            else
+            {
+                ViewBag.Estados = new SelectList(todosLosEstados, "IdEstadoTarea", "EstadoTarea1");
+            }
             ViewBag.Usuarios = new SelectList(await _unitOfWork.Usuarios.GetAll(), "IdUsuario", "Nombre");
 
             return View(request);
@@ -80,9 +94,25 @@ namespace ProyectoPA_G5.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // Si falla validación, recarga los combos y retorna la vista
+             
                 ViewBag.Prioridades = new SelectList(await _unitOfWork.Prioridades.GetAll(), "IdPrioridad", "Prioridad1");
-                ViewBag.Estados = new SelectList(await _unitOfWork.EstadoTareas.GetAll(), "IdEstadoTarea", "EstadoTarea1");
+                
+                var todosLosEstados = await _unitOfWork.EstadoTareas.GetAll();
+                var tareaActual = await _tareaService.GetById(id);
+                var estadoActual = todosLosEstados.FirstOrDefault(e => e.IdEstadoTarea == tareaActual.IdEstadoTarea);
+
+                if (estadoActual != null && estadoActual.EstadoTarea1 == "Cancelada")
+                {
+                    
+                    var soloEstadoCancelado = todosLosEstados.Where(e => e.EstadoTarea1 == "Cancelada").ToList();
+                    ViewBag.Estados = new SelectList(soloEstadoCancelado, "IdEstadoTarea", "EstadoTarea1");
+                }
+                else
+                {
+                    
+                    ViewBag.Estados = new SelectList(todosLosEstados, "IdEstadoTarea", "EstadoTarea1");
+                }
+                
                 ViewBag.Usuarios = new SelectList(await _unitOfWork.Usuarios.GetAll(), "IdUsuario", "Nombre");
                 return View(request);
             }
