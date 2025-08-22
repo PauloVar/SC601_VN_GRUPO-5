@@ -1,4 +1,5 @@
-﻿using Proyecto.DAL.Context;
+﻿using Microsoft.EntityFrameworkCore;
+using Proyecto.DAL.Context;
 using Proyecto.DAL.Interfaces;
 using Proyecto.ML.Entities;
 using System;
@@ -9,10 +10,18 @@ using System.Threading.Tasks;
 
 namespace Proyecto.DAL.Repositories
 {
-    public class EstadoTareaRepository : GenericRepository<EstadoTarea>, IEstadoTareaRepository
+    public class EstadoTareaRepository : IEstadoTareaRepository
     {
-        public EstadoTareaRepository(ProyectoTareasContext context) : base(context)
+        private readonly ProyectoTareasContext _context;
+
+        public EstadoTareaRepository(ProyectoTareasContext context)
         {
+            _context = context;
+        }
+
+        public async Task<List<EstadoTarea>> GetAll()
+        {
+            return await _context.EstadoTareas.ToListAsync();
         }
     }
 }

@@ -20,7 +20,8 @@ namespace Proyecto.BLL.Interfaces
         Task<Tarea> ObtenerSiguienteTareaPendienteAsync();
         Task ActualizarEstadoAsync(Tarea tarea);
 
-
+        Task<List<Prioridad>> GetPrioridades();
+        Task<List<EstadoTarea>> GetEstados();
 
 
         Task<IEnumerable<TareaResponse>> ObtenerTareasEnColaAsync();

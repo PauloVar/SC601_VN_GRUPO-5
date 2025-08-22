@@ -6,106 +6,99 @@ using Proyecto.DAL.Context;
 using Proyecto.DAL.Interfaces;
 using Proyecto.DAL.Repositories;
 using Proyecto.DAL.UnitsOfWork;
+using Proyecto.ML.Entities;
 using ProyectoPA_G5.Services;
-
-using ProyectoPA_G5.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
+// AutoMapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-builder.Services.AddDbContext<ProyectoTareasContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// --- Contextos ---
+builder.Services.AddDbContext<ProyectoTareasContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddDbContext<ProyectoPADbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Model_first_connection")));
+
+// --- Identity ---
+builder.Services.AddIdentity<Usuario, IdentityRole<int>>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+    options.Password.RequireDigit = false;
+    options.Password.RequiredLength = 6;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+})
+.AddEntityFrameworkStores<ProyectoPADbContext>()
+.AddDefaultTokenProviders();
+
+// --- Repositorios y UnitOfWork ---
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
-
 builder.Services.AddTransient<ITareaService, TareaService>();
 builder.Services.AddScoped<IPrioridadRepository, PrioridadRepository>();
 builder.Services.AddScoped<IEstadoTareaRepository, EstadoTareaRepository>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddHostedService<TaskWorkerService>();
 
-
-
-
-
-//builder.Services.AddDbContext<ProyectoPADbContext>(options =>
-//{
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-//});
-
-
-//builder.Services.AddDefaultIdentity<IdentityUser>(options =>
-//{
-//    options.SignIn.RequireConfirmedAccount = false;
-//})
-//.AddRoles<IdentityRole>()
-//.AddEntityFrameworkStores<ProyectoPADbContext>();
-
-// Add services to the container.
+// Controllers & RazorPages
 builder.Services.AddControllersWithViews();
-
-
-
 builder.Services.AddRazorPages();
 
-//builder.Services.ConfigureApplicationCookie(options =>
-//{
-//    options.LoginPath = "/Account/Login";
-//    options.LogoutPath = "/Account/Logout";
-//});
+// Cookie settings
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.LogoutPath = "/Account/Logout";
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// --- Middleware ---
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-//app.MapControllerRoute(
-//    name: "Default",
-//    pattern: "{controller=Cuenta}/{action=Login}/{id?}");
-
+// --- Rutas ---
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-
-//using (var scope = app.Services.CreateScope())
-//{
-//    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-//    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+// --- Inicializar roles y admin ---
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Usuario>>();
 
 //    string[] roles = { "Administrador", "Estudiante" };
 
-//    foreach (var item in roles)
-//    {
-//        if (!await roleManager.RoleExistsAsync(item))
-//        {
-//            await roleManager.CreateAsync(new IdentityRole(item));
-//        }
-//    }
+    foreach (var roleName in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(roleName))
+        {
+            await roleManager.CreateAsync(new IdentityRole<int> { Name = roleName });
+        }
+    }
 
 //    var adminEmail = "admin@domo.com";
 //    var adminUser = await userManager.FindByEmailAsync(adminEmail);
 
-//    if (adminUser == null)
-//    {
-//        var user = new IdentityUser { UserName = adminEmail, Email = adminEmail };
-//        await userManager.CreateAsync(user, "Admin123!");
-//        await userManager.AddToRoleAsync(user, "Administrador");
-//    }
-//}
+    if (adminUser == null)
+    {
+        var user = new Usuario { UserName = adminEmail, Email = adminEmail };
+        await userManager.CreateAsync(user, "Admin123!");
+        await userManager.AddToRoleAsync(user, "Administrador");
+    }
+}
+
 
 
 app.Run();

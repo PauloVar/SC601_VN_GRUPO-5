@@ -1,22 +1,19 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Proyecto.ML.Entities;
 
-namespace ProyectoPA_G5.Data
+namespace Proyecto.DAL.Context
 {
-    public class ProyectoPADbContext : IdentityDbContext
-
+    public class ProyectoPADbContext : IdentityDbContext<Usuario, IdentityRole<int>, int>
     {
-
         public ProyectoPADbContext(DbContextOptions<ProyectoPADbContext> options)
-                    : base(options)
-        {
-        }
+            : base(options)
+        { }
 
-        public DbSet<Proyecto.ML.Entities.Usuario> Usuarios { get; set; }
-
-
-        public DbSet<Proyecto.ML.Entities.Estado> Estados { get; set; }
-
+        // Otros DbSets propios
+        public DbSet<Estado_db_first> Estados { get; set; }
     }
-
 }
+
+

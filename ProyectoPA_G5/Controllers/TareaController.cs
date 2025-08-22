@@ -1,26 +1,26 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Proyecto.BLL.Dtos.Requests;
 using Proyecto.BLL.Dtos.Responses;
 using Proyecto.BLL.Interfaces;
-using Proyecto.DAL.UnitsOfWork;
+using Proyecto.ML.Entities;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace ProyectoPA_G5.Controllers
 {
     public class TareaController : Controller
     {
         private readonly ITareaService _tareaService;
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly UserManager<Usuario> _userManager;
 
-
-        public TareaController(ITareaService tareaService, IUnitOfWork unitOfWork, IMapper mapper)
+        public TareaController(ITareaService tareaService, IMapper mapper, UserManager<Usuario> userManager)
         {
             _tareaService = tareaService;
-            _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index()
@@ -31,14 +31,7 @@ namespace ProyectoPA_G5.Controllers
 
         public async Task<IActionResult> Create()
         {
-            ViewBag.Prioridades = new SelectList(await _unitOfWork.Prioridades.GetAll(), "IdPrioridad", "Prioridad1");
-            var estadosFiltrados = (await _unitOfWork.EstadoTareas.GetAll())
-            .Where(e => e.EstadoTarea1 == "Pendiente" || e.EstadoTarea1 == "En Proceso")
-            .ToList();
-            ViewBag.Estados = new SelectList(estadosFiltrados, "IdEstadoTarea", "EstadoTarea1");
-            ViewBag.Usuarios = new SelectList(await _unitOfWork.Usuarios.GetAll(), "IdUsuario", "Nombre");
-
-
+            await CargarDropdowns(esEdicion: false);
             return View();
         }
 
@@ -46,7 +39,10 @@ namespace ProyectoPA_G5.Controllers
         public async Task<IActionResult> Create(TareaRequest request)
         {
             if (!ModelState.IsValid)
+            {
+                await CargarDropdowns(esEdicion: false);
                 return View(request);
+            }
 
             await _tareaService.Create(request);
             return RedirectToAction("Index");
@@ -55,13 +51,11 @@ namespace ProyectoPA_G5.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var tarea = await _tareaService.GetById(id);
-            if (tarea == null)
-                return NotFound();
+            if (tarea == null) return NotFound();
 
-            // Mapea tarea a TareaRequest 
             var request = new TareaRequest
             {
-                IdUsuario = tarea.IdUsuario,          
+                IdUsuario = tarea.IdUsuario,
                 Descripcion = tarea.Descripcion,
                 IdPrioridad = tarea.IdPrioridad,
                 IdEstadoTarea = tarea.IdEstadoTarea,
@@ -69,51 +63,16 @@ namespace ProyectoPA_G5.Controllers
                 FechaHoraSolicitud = tarea.FechaHoraSolicitud
             };
 
-            // Cargar de datos 
-            ViewBag.Prioridades = new SelectList(await _unitOfWork.Prioridades.GetAll(), "IdPrioridad", "Prioridad1");
-            var todosLosEstados = await _unitOfWork.EstadoTareas.GetAll();
-            var estadoActual = todosLosEstados.FirstOrDefault(e => e.IdEstadoTarea == tarea.IdEstadoTarea);
-
-            if (estadoActual != null && estadoActual.EstadoTarea1 == "Cancelada")
-            {
-                var soloEstadoCancelado = todosLosEstados.Where(e => e.EstadoTarea1 == "Cancelada").ToList();
-                ViewBag.Estados = new SelectList(soloEstadoCancelado, "IdEstadoTarea", "EstadoTarea1");
-            }
-            else
-            {
-                ViewBag.Estados = new SelectList(todosLosEstados, "IdEstadoTarea", "EstadoTarea1");
-            }
-            ViewBag.Usuarios = new SelectList(await _unitOfWork.Usuarios.GetAll(), "IdUsuario", "Nombre");
-
+            await CargarDropdowns(tarea.IdEstadoTarea, esEdicion: true);
             return View(request);
         }
-
 
         [HttpPost]
         public async Task<IActionResult> Edit(int id, TareaRequest request)
         {
             if (!ModelState.IsValid)
             {
-             
-                ViewBag.Prioridades = new SelectList(await _unitOfWork.Prioridades.GetAll(), "IdPrioridad", "Prioridad1");
-                
-                var todosLosEstados = await _unitOfWork.EstadoTareas.GetAll();
-                var tareaActual = await _tareaService.GetById(id);
-                var estadoActual = todosLosEstados.FirstOrDefault(e => e.IdEstadoTarea == tareaActual.IdEstadoTarea);
-
-                if (estadoActual != null && estadoActual.EstadoTarea1 == "Cancelada")
-                {
-                    
-                    var soloEstadoCancelado = todosLosEstados.Where(e => e.EstadoTarea1 == "Cancelada").ToList();
-                    ViewBag.Estados = new SelectList(soloEstadoCancelado, "IdEstadoTarea", "EstadoTarea1");
-                }
-                else
-                {
-                    
-                    ViewBag.Estados = new SelectList(todosLosEstados, "IdEstadoTarea", "EstadoTarea1");
-                }
-                
-                ViewBag.Usuarios = new SelectList(await _unitOfWork.Usuarios.GetAll(), "IdUsuario", "Nombre");
+                await CargarDropdowns(request.IdEstadoTarea, esEdicion: true);
                 return View(request);
             }
 
@@ -121,69 +80,32 @@ namespace ProyectoPA_G5.Controllers
             return RedirectToAction("Index");
         }
 
-
-        //public async Task<IActionResult> Delete(int id)
-        //{
-        //    var tarea = await _tareaService.GetById(id);
-        //    if (tarea == null)
-        //        return NotFound();
-
-        //    return View(tarea);
-        //}
-
-        //[HttpPost, ActionName("Delete")]
-        //public async Task<IActionResult> DeleteConfirmed(int id)
-        //{
-        //    await _tareaService.Delete(id);
-        //    return RedirectToAction("Index");
-        //}
-
-        // GET: Tarea/Details/5
-        // Controlador Details
         public async Task<IActionResult> Details(int id)
         {
-            var tareaResponse = await _tareaService.GetById(id);
-            if (tareaResponse == null) return NotFound();
-            // Ya tienes los nombres en el DTO:
-            ViewBag.NombreUsuarioAsignado = tareaResponse.NombreUsuarioAsignado;
-            ViewBag.NombreCreador = tareaResponse.NombreCreador;
-            return View(tareaResponse);
+            var tarea = await _tareaService.GetById(id);
+            if (tarea == null) return NotFound();
+            return View(tarea);
         }
 
-        // GET: Tarea/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
-            var tareaResponse = await _tareaService.GetById(id);
-            if (tareaResponse == null)
-            {
-                return NotFound();
-            }
-
-            // Ya tienes los nombres en el DTO:
-            ViewBag.NombreUsuarioAsignado = tareaResponse.NombreUsuarioAsignado;
-            ViewBag.NombreCreador = tareaResponse.NombreCreador;
-
-            return View(tareaResponse);
+            var tarea = await _tareaService.GetById(id);
+            if (tarea == null) return NotFound();
+            return View(tarea);
         }
 
-        // POST: Tarea/DeleteConfirmed
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var eliminado = await _tareaService.Delete(id);
-            if (!eliminado)
-            {
-                return NotFound();
-            }
-
-            return RedirectToAction(nameof(Index));
+            if (!eliminado) return NotFound();
+            return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> ColaTareas()
         {
             var tareasEnCola = await _tareaService.ObtenerTareasEnColaAsync();
-
             var tareasAgrupadas = tareasEnCola
                 .GroupBy(t => t.Prioridad)
                 .OrderBy(g => Array.IndexOf(new[] { "Alta", "Media", "Baja" }, g.Key));
@@ -191,8 +113,36 @@ namespace ProyectoPA_G5.Controllers
             return View(tareasAgrupadas);
         }
 
+        // ================= Helper =================
+        private async Task CargarDropdowns(int? estadoActualId = null, bool esEdicion = false)
+        {
+            // Prioridades
+            var prioridades = await _tareaService.GetPrioridades();
+            ViewBag.Prioridades = new SelectList(prioridades, "IdPrioridad", "Prioridad1");
 
+            // Estados
+            var estados = await _tareaService.GetEstados();
 
+            if (!esEdicion)
+            {
+                // Crear: solo Pendiente y En Proceso
+                estados = estados.Where(e => e.EstadoTarea1 == "Pendiente" || e.EstadoTarea1 == "En Proceso").ToList();
+            }
+            else if (estadoActualId.HasValue)
+            {
+                // Editar: si estado es Cancelada, solo mostrar cancelada
+                var estadoActual = estados.FirstOrDefault(e => e.IdEstadoTarea == estadoActualId.Value);
+                if (estadoActual != null && estadoActual.EstadoTarea1 == "Cancelada")
+                {
+                    estados = estados.Where(e => e.EstadoTarea1 == "Cancelada").ToList();
+                }
+            }
 
+            ViewBag.Estados = new SelectList(estados, "IdEstadoTarea", "EstadoTarea1");
+
+            // Usuarios desde Identity
+            var usuarios = await _userManager.Users.ToListAsync();
+            ViewBag.Usuarios = new SelectList(usuarios, "Id", "UserName");
+        }
     }
 }

@@ -1,42 +1,27 @@
 ﻿@model Proyecto.BLL.Dtos.Responses.TareaResponse
 
-@{
-    ViewData["Title"] = "Eliminar Tarea";
-}
+<h2>Eliminar Tarea</h2>
 
-<h1>¿Estás seguro que deseas eliminar esta tarea?</h1>
+<div>
+    <h4>@Model.Descripcion</h4>
+    <dl class="dl-horizontal">
+        <dt>Usuario asignado:</dt>
+        <dd>@Model.NombreUsuarioAsignado</dd>
 
-<div class="form-group">
-    <label class="control-label">Descripción</label>
-    <input class="form-control" value="@Model.Descripcion" readonly />
+        <dt>Creada por:</dt>
+        <dd>@Model.NombreCreador</dd>
+
+        <dt>Prioridad:</dt>
+        <dd>@Model.Prioridad</dd>
+
+        <dt>Estado:</dt>
+        <dd>@Model.Estado</dd>
+    </dl>
+
+    <form asp-action="Delete" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="IdTarea" />
+        <button type="submit" class="btn btn-danger">Eliminar</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </form>
 </div>
-
-<div class="form-group">
-    <label class="control-label">Prioridad</label>
-    <input class="form-control" value="@Model.Prioridad" readonly />
-</div>
-
-<div class="form-group">
-    <label class="control-label">Estado</label>
-    <input class="form-control" value="@Model.Estado" readonly />
-</div>
-
-<div class="form-group">
-    <label class="control-label">Usuario asignado</label>
-    <input class="form-control" value="@ViewBag.NombreUsuarioAsignado" readonly />
-</div>
-
-<div class="form-group">
-    <label class="control-label">Usuario que crea</label>
-    <input class="form-control" value="@ViewBag.NombreCreador" readonly />
-</div>
-
-<div class="form-group">
-    <label class="control-label">Fecha de solicitud</label>
-    <input class="form-control" value="@Model.FechaHoraSolicitud.ToString("g")" readonly />
-</div>
-<form asp-action="DeleteConfirmed" method="post">
-    <input type="hidden" name="id" value="@Model.IdTarea" />
-    <button type="submit" class="btn btn-danger">Eliminar</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
-</form>
