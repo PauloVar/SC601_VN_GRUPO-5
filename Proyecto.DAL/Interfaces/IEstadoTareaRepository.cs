@@ -1,13 +1,11 @@
 ﻿using Proyecto.ML.Entities;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Proyecto.DAL.Interfaces
 {
-    public interface IEstadoTareaRepository : IGenericRepository<EstadoTarea>
+    public interface IEstadoTareaRepository
     {
+        Task<List<EstadoTarea>> GetAll();
     }
 }

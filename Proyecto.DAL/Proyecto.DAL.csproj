@@ -28,4 +28,8 @@
     <ProjectReference Include="..\Proyecto.ML\Proyecto.ML.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>

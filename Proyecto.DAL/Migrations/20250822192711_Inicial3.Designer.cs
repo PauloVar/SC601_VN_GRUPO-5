@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Proyecto.DAL.Context;
 
@@ -11,9 +12,11 @@ using Proyecto.DAL.Context;
 namespace Proyecto.DAL.Migrations
 {
     [DbContext(typeof(ProyectoPADbContext))]
-    partial class ProyectoPADbContextModelSnapshot : ModelSnapshot
+    [Migration("20250822192711_Inicial3")]
+    partial class Inicial3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -20,7 +20,7 @@ public partial class ProyectoTareasContext : DbContext
 
     public virtual DbSet<EstadoTarea> EstadoTareas { get; set; }
 
-    public virtual DbSet<Prioridad> Prioridads { get; set; }
+    public virtual DbSet<Prioridad> Prioridades { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
 

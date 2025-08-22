@@ -29,10 +29,27 @@
                 <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">AppName</a>
             </div>
             <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li>
+                            <form asp-controller="Cuenta" asp-action="Logout" method="post" class="navbar-form navbar-right">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-link navbar-btn">Cerrar sesión (@User.Identity.Name)</button>
+                            </form>
+                        </li>
+                    }
+                    else
+                    {
+                        <li><a asp-controller="Cuenta" asp-action="Login">Login</a></li>
+                        <li><a asp-controller="Cuenta" asp-action="Register">Register</a></li>
+                    }
+                </ul>
             </div>
         </div>
     </nav>
-    <div class="container body-content">
+
+    <div class="container body-content" style="margin-top: 60px;">
         @RenderBody()
         <hr />
         <footer>
