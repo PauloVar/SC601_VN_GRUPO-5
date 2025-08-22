@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Proyecto.ML.Entities
 {
-    public class Estado_model_firsty
+    public class Estado_db_first
     {
         [Key]
         public int Id_Estado { get; set; }

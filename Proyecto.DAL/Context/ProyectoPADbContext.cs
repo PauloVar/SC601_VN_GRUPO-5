@@ -15,7 +15,7 @@ namespace ProyectoPA_G5.Data
         public DbSet<Proyecto.ML.Entities.Usuario> Usuarios { get; set; }
 
 
-        public DbSet<Proyecto.ML.Entities.Estado> Estados { get; set; }
+        public DbSet<Proyecto.ML.Entities.Estado_db_first> Estados { get; set; }
 
     }
 

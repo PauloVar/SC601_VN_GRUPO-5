@@ -1,31 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Proyecto.ML.Entities;
 
-public class Usuario
+namespace Proyecto.ML.Entities
 {
-    public int IdUsuario { get; set; }
+    public partial class Usuario
+    {
+        [Key]
+        public int Id_Usuario { get; set; }
 
-    public string Nombre { get; set; } = null!;
+        [Required]
+        [MaxLength(100)]
+        public string Nombre { get; set; }
 
-    public string Email { get; set; } = null!;
+        [Required]
+        [MaxLength(100)]
+        public string Email { get; set; }
 
-    public string Password { get; set; } = null!;
+        [Required]
+        [MaxLength(255)]
+        public string Password { get; set; }
 
-    public DateTime FechaRegistro { get; set; }
+        public DateTime Fecha_Registro { get; set; } = DateTime.Now;
 
-    public int Rolid { get; set; }
+        public int Id_Estado { get; set; }
 
-    public int IdEstado { get; set; }
-
-    public virtual Estado IdEstadoNavigation { get; set; } = null!;
-
-    public virtual Role Rol { get; set; } = null!;
-
-    public virtual ICollection<Tarea> TareaCreadaPorNavigations { get; set; } = new List<Tarea>();
-
-    public virtual ICollection<Tarea> TareaIdUsuarioNavigations { get; set; } = new List<Tarea>();
-
-    public virtual ICollection<Tarea> TareaUpdatePorNavigations { get; set; } = new List<Tarea>();
+        [ForeignKey(nameof(Id_Estado))]
+        public Estado_db_first Estado { get; set; }
+    }
 }

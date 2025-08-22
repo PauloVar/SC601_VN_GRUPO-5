@@ -15,7 +15,7 @@ namespace Proyecto.DAL.Interfaces
 
         Task<Tarea?> GetById(int id);
 
-        Task<Tarea?> GetByIdWithIncludes(int id);
+        //Task<Tarea?> GetByIdWithIncludes(int id);
     }
 
     

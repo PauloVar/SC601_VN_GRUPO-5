@@ -35,11 +35,8 @@ namespace Proyecto.DAL.Repositories
             return await _context.Tareas
                 .Include(t => t.IdPrioridadNavigation)
                 .Include(t => t.IdEstadoTareaNavigation)
-                .Include(t => t.IdUsuarioNavigation)       // Usuario asignado
-                .Include(t => t.CreadaPorNavigation)       // Usuario que crea
                 .ToListAsync();
         }
-
 
         public async Task<Tarea?> GetById(int id)
         {
@@ -49,15 +46,15 @@ namespace Proyecto.DAL.Repositories
                 .FirstOrDefaultAsync(t => t.IdTarea == id);
         }
 
-        public async Task<Tarea?> GetByIdWithIncludes(int id)
-        {
-            return await _context.Tareas
-                .Include(t => t.IdUsuarioNavigation)
-                .Include(t => t.CreadaPorNavigation)
-                .Include(t => t.IdPrioridadNavigation)
-                .Include(t => t.IdEstadoTareaNavigation)
-                .FirstOrDefaultAsync(t => t.IdTarea == id);
-        }
+        //public async Task<Tarea?> GetByIdWithIncludes(int id)
+        //{
+        //    return await _context.Tareas
+        //        .Include(t => t.IdUsuarioNavigation)
+        //        .Include(t => t.CreadaPorNavigation)
+        //        .Include(t => t.IdPrioridadNavigation)
+        //        .Include(t => t.IdEstadoTareaNavigation)
+        //        .FirstOrDefaultAsync(t => t.IdTarea == id);
+        //}
 
 
 
