@@ -16,7 +16,7 @@ public partial class ProyectoTareasContext : DbContext
     {
     }
 
-    public virtual DbSet<Estado_db_first> Estados { get; set; }
+    public virtual DbSet<Estado> Estados { get; set; }
 
     public virtual DbSet<EstadoTarea> EstadoTareas { get; set; }
 
@@ -34,17 +34,17 @@ public partial class ProyectoTareasContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        //modelBuilder.Entity<Estado_db_first>(entity =>
-        //{
-        //    entity.HasKey(e => e.IdEstado).HasName("PK__Estado__86989FB231BA5041");
+        modelBuilder.Entity<Estado>(entity =>
+        {
+            entity.HasKey(e => e.IdEstado).HasName("PK__Estado__86989FB231BA5041");
 
-        //    entity.ToTable("Estado");
+            entity.ToTable("Estado");
 
-        //    entity.Property(e => e.IdEstado).HasColumnName("id_estado");
-        //    entity.Property(e => e.Estado1)
-        //        .HasMaxLength(20)
-        //        .HasColumnName("estado");
-        //});
+            entity.Property(e => e.IdEstado).HasColumnName("id_estado");
+            entity.Property(e => e.Estado1)
+                .HasMaxLength(20)
+                .HasColumnName("estado");
+        });
 
         modelBuilder.Entity<EstadoTarea>(entity =>
         {
@@ -87,6 +87,7 @@ public partial class ProyectoTareasContext : DbContext
             entity.ToTable("Tarea");
 
             entity.Property(e => e.IdTarea).HasColumnName("id_tarea");
+            entity.Property(e => e.CreadaPor).HasColumnName("creada_por");
             entity.Property(e => e.Descripcion).HasColumnName("descripcion");
             entity.Property(e => e.FechaHoraSolicitud)
                 .HasDefaultValueSql("(getdate())")
@@ -95,14 +96,16 @@ public partial class ProyectoTareasContext : DbContext
             entity.Property(e => e.FechaHoraUpdate)
                 .HasColumnType("datetime")
                 .HasColumnName("fecha_hora_update");
-
-            entity.Property(e => e.IdUsuario).HasColumnName("id_usuario"); // solo FK sin navegación
-            entity.Property(e => e.CreadaPor).HasColumnName("creada_por");
-            entity.Property(e => e.UpdatePor).HasColumnName("update_por");
             entity.Property(e => e.IdEstadoTarea).HasColumnName("id_estado_tarea");
             entity.Property(e => e.IdPrioridad).HasColumnName("id_prioridad");
+            entity.Property(e => e.IdUsuario).HasColumnName("id_usuario");
+            entity.Property(e => e.UpdatePor).HasColumnName("update_por");
+            //////////////////
+            entity.HasOne(d => d.CreadaPorNavigation).WithMany(p => p.TareaCreadaPorNavigations)
+                .HasForeignKey(d => d.CreadaPor)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Tarea_CreadaPor");
 
-            // ✅ Relación con tablas locales
             entity.HasOne(d => d.IdEstadoTareaNavigation).WithMany(p => p.Tareas)
                 .HasForeignKey(d => d.IdEstadoTarea)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -112,46 +115,52 @@ public partial class ProyectoTareasContext : DbContext
                 .HasForeignKey(d => d.IdPrioridad)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Tarea_Prioridad");
+            /////////////////
+            entity.HasOne(d => d.IdUsuarioNavigation).WithMany(p => p.TareaIdUsuarioNavigations)
+                .HasForeignKey(d => d.IdUsuario)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Tarea_Usuario");
 
-            // ❌ Se eliminan las configuraciones que usaban Usuario
+            entity.HasOne(d => d.UpdatePorNavigation).WithMany(p => p.TareaUpdatePorNavigations)
+                .HasForeignKey(d => d.UpdatePor)
+                .HasConstraintName("FK_Tarea_UpdatePor");
         });
-
         ////////////////
-        //modelBuilder.Entity<Usuario>(entity =>
-        //{
-        //    entity.HasKey(e => e.IdUsuario).HasName("PK__Usuario__4E3E04AD66CE6AD1");
+        modelBuilder.Entity<Usuario>(entity =>
+        {
+            entity.HasKey(e => e.IdUsuario).HasName("PK__Usuario__4E3E04AD66CE6AD1");
 
-        //    entity.ToTable("Usuario");
+            entity.ToTable("Usuario");
 
-        //    entity.HasIndex(e => e.Email, "UQ__Usuario__AB6E6164427F5C7D").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__Usuario__AB6E6164427F5C7D").IsUnique();
 
-        //    entity.Property(e => e.IdUsuario).HasColumnName("id_usuario");
-        //    entity.Property(e => e.Email)
-        //        .HasMaxLength(100)
-        //        .HasColumnName("email");
-        //    entity.Property(e => e.FechaRegistro)
-        //        .HasDefaultValueSql("(getdate())")
-        //        .HasColumnType("datetime")
-        //        .HasColumnName("fecha_registro");
-        //    entity.Property(e => e.IdEstado).HasColumnName("id_estado");
-        //    entity.Property(e => e.Nombre)
-        //        .HasMaxLength(100)
-        //        .HasColumnName("nombre");
-        //    entity.Property(e => e.Password)
-        //        .HasMaxLength(255)
-        //        .HasColumnName("password");
-        //    entity.Property(e => e.Rolid).HasColumnName("rolid");
+            entity.Property(e => e.IdUsuario).HasColumnName("id_usuario");
+            entity.Property(e => e.Email)
+                .HasMaxLength(100)
+                .HasColumnName("email");
+            entity.Property(e => e.FechaRegistro)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_registro");
+            entity.Property(e => e.IdEstado).HasColumnName("id_estado");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(100)
+                .HasColumnName("nombre");
+            entity.Property(e => e.Password)
+                .HasMaxLength(255)
+                .HasColumnName("password");
+            entity.Property(e => e.Rolid).HasColumnName("rolid");
 
-        //    entity.HasOne(d => d.IdEstadoNavigation).WithMany(p => p.Usuarios)
-        //        .HasForeignKey(d => d.IdEstado)
-        //        .OnDelete(DeleteBehavior.ClientSetNull)
-        //        .HasConstraintName("FK_Usuario_Estado");
+            entity.HasOne(d => d.IdEstadoNavigation).WithMany(p => p.Usuarios)
+                .HasForeignKey(d => d.IdEstado)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Usuario_Estado");
 
-        //    entity.HasOne(d => d.Rol).WithMany(p => p.Usuarios)
-        //        .HasForeignKey(d => d.Rolid)
-        //        .OnDelete(DeleteBehavior.ClientSetNull)
-        //        .HasConstraintName("FK_Usuario_Roles");
-        //});
+            entity.HasOne(d => d.Rol).WithMany(p => p.Usuarios)
+                .HasForeignKey(d => d.Rolid)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Usuario_Roles");
+        });
 
         OnModelCreatingPartial(modelBuilder);
     }
