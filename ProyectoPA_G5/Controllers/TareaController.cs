@@ -126,7 +126,7 @@ namespace ProyectoPA_G5.Controllers
             if (!esEdicion)
             {
                 // Crear: solo Pendiente y En Proceso
-                estados = estados.Where(e => e.EstadoTarea1 == "Pendiente" || e.EstadoTarea1 == "En Proceso").ToList();
+                estados = estados.Where(e => e.EstadoTarea1 == "Pendiente").ToList();
             }
             else if (estadoActualId.HasValue)
             {
