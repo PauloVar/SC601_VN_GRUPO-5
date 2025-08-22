@@ -4,6 +4,7 @@ using Proyecto.BLL.Dtos.Responses;
 using Proyecto.BLL.Interfaces;
 using Proyecto.DAL.UnitsOfWork;
 using Proyecto.ML.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,6 +70,23 @@ namespace Proyecto.BLL.Servicios
             return true;
         }
 
+        public async Task<Tarea> ObtenerSiguienteTareaPendienteAsync()
+        {
+            var tareasPendientes = await _unitOfWork.Tareas.GetAllWithRelations();
+
+
+            return tareasPendientes
+                .Where(t => t.IdEstadoTarea == 1)
+                .OrderByDescending(t => t.IdPrioridad)
+                .ThenBy(t => t.FechaHoraSolicitud)
+                .FirstOrDefault();
+        }
+
+        public async Task ActualizarEstadoAsync(Tarea tarea)
+        {
+            await _unitOfWork.Tareas.Update(tarea);
+            await _unitOfWork.SaveChangesAsync();
+        }
 
 
         public async Task<TareaResponse?> GetById(int id)

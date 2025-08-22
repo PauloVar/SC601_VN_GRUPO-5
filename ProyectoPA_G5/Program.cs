@@ -6,6 +6,8 @@ using Proyecto.DAL.Context;
 using Proyecto.DAL.Interfaces;
 using Proyecto.DAL.Repositories;
 using Proyecto.DAL.UnitsOfWork;
+using ProyectoPA_G5.Services;
+
 using ProyectoPA_G5.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +23,8 @@ builder.Services.AddTransient<ITareaService, TareaService>();
 builder.Services.AddScoped<IPrioridadRepository, PrioridadRepository>();
 builder.Services.AddScoped<IEstadoTareaRepository, EstadoTareaRepository>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddHostedService<TaskWorkerService>();
+
 
 
 
@@ -40,6 +44,7 @@ builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
 
 
 builder.Services.AddRazorPages();

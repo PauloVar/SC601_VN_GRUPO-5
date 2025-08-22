@@ -1,5 +1,6 @@
 ﻿using Proyecto.BLL.Dtos.Requests;
 using Proyecto.BLL.Dtos.Responses;
+using Proyecto.ML.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,12 @@ namespace Proyecto.BLL.Interfaces
         Task<bool> Create(TareaRequest request);
         Task<bool> Update(int id, TareaRequest request);
         Task<bool> Delete(int id);
+
+        Task<Tarea> ObtenerSiguienteTareaPendienteAsync();
+        Task ActualizarEstadoAsync(Tarea tarea);
+
+
+
 
         Task<IEnumerable<TareaResponse>> ObtenerTareasEnColaAsync();
     }
