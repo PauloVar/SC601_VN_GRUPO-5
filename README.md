@@ -31,6 +31,7 @@ ProyectoPA_G5/
 ## Librerías/Paquetes NuGet Utilizados
 
 ### ProyectoPA_G5 (Capa de Presentación)
+
 - **Microsoft.AspNetCore.Identity.EntityFrameworkCore** - Integración de Identity con Entity Framework Core
 - **Microsoft.AspNetCore.Identity.UI** - Interfaz de usuario predeterminada para Identity
 - **Microsoft.EntityFrameworkCore** - ORM Entity Framework Core
@@ -40,9 +41,11 @@ ProyectoPA_G5/
 - **Microsoft.VisualStudio.Web.CodeGeneration.Design** - Herramientas de scaffolding para ASP.NET Core
 
 ### Proyecto.BLL (Capa de Lógica de Negocio)
+
 - **AutoMapper** - Mapeo automático entre objetos
 
 ### Proyecto.DAL (Capa de Acceso a Datos)
+
 - **Dapper** - Micro ORM para .NET
 - **Microsoft.Data.SqlClient** - Cliente de datos para SQL Server
 - **Microsoft.EntityFrameworkCore** - ORM Entity Framework Core
@@ -51,6 +54,7 @@ ProyectoPA_G5/
 - **Microsoft.EntityFrameworkCore.Tools** - Herramientas de línea de comandos para EF Core
 
 ### Proyecto.ML (Capa de Modelos)
+
 - **Microsoft.AspNet.Identity.EntityFramework** - Framework de Identity para Entity Framework
 - **Microsoft.Extensions.Identity.Core** - Servicios core de Identity
 
@@ -70,3 +74,24 @@ ProyectoPA_G5/
 - Acceso a datos híbrido (Entity Framework + Dapper)
 - Mapeo automático de objetos
 - Soporte para SQL Server
+
+Video presentacion final:
+
+https://ufidelitas-my.sharepoint.com/:v:/g/personal/eleblicq40651_ufide_ac_cr/EfIsXRmY5ntJqRcI0Wvr46wBGlbS6jdj_wEURcs93Wt60g?e=CYe4V7
+
+Grupo 5
+
+Para que el programa corra es necesario ejecutar el script inserts.sql
+luego en el sql server ejecutar el siguiente comando:
+USE ProyectoTareas;
+GO
+
+ALTER TABLE Tarea DROP CONSTRAINT FK_Tarea_Usuario;
+ALTER TABLE Tarea DROP CONSTRAINT FK_Tarea_CreadaPor;
+ALTER TABLE Tarea DROP CONSTRAINT FK_Tarea_UpdatePor;
+
+luego para los migrations en nuget tools:
+
+Add-Migration Inicial3 -Context ProyectoPADbContext -Project Proyecto.DAL
+
+Update-Database -Context ProyectoPADbContext -Project Proyecto.DAL
